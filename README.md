@@ -4,6 +4,8 @@ infer.py is a *single* Python program with the fewest parts you need to do infer
 
 On a modern Mac with Python and the dependencies installed, `python infer.py --prompt 'Tell me a joke.'` should result in a cringeworthy joke.
 
+The big win for you is **being able to manipulate the inference process** for education or entertainment (as shown in some examples later).
+
 ## Motivation
 
 When I saw [Apple's work on LLM inference tooling](https://github.com/ml-explore/mlx-examples/tree/main/llms/mlx_lm) I had fun using it, but realized if I really wanted to *understand* inference I'd need to rework it, reimplement parts of it, and get my head into the whole process.
@@ -59,7 +61,42 @@ There are a handful of options:
   **Default:** `42`
   **Description:** A random seed for the PRNG. Everyone in LLM-land seems to use 42 as a default because Ilya Sutskever did it in a demo once or something.
 
+## Logits processors (the fun bit)
+
+One way to have fun with LLMs, even small ones, is to 'force' them to say things. For example, if your model always refuses to answer a specific prompt, what happens if you force it to start its response with 'Yes, I am happy to help'? It depends. But you can do that!
+
+```python
+token_stream = model.tokenizer.encode("I refuse to answer that because", False, False)
+def make_the_model_start_with_something(tokens_so_far, logits):
+    nonlocal token_stream
+    if token_stream:
+        next_token = token_stream.pop(0)
+        logits[:, next_token] = 2000
+    return logits
+model.generate(args.prompt, max_tokens=args.max_tokens, sampler=sampler, logits_processors=[make_the_model_start_with_something])
+```
+
+You could also perhaps give the model a bit of a tic:
+
+```python
+token_stream = []
+import random
+def make_the_model_weird(tokens_so_far, logits):
+    nonlocal token_stream
+    if len(token_stream) > 0:
+        next_token = token_stream.pop(0)
+        logits[:, next_token] = 2000
+    else:
+      if random.random() < 0.08:
+          token_stream.extend(model.tokenizer.encode("What the??", False, False))
+
+    return logits
+
+model.generate(args.prompt, max_tokens=args.max_tokens, sampler=sampler, logits_processors=[make_the_model_weird])
+```
+
+Let your imagination run wild! (You could also detect certain things it has said and then force its ongoing response from there.)
+
 ## TODO
 
 * System prompting
-* Provide actual examples of fun logit processing trickery
