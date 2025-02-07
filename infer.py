@@ -22,6 +22,15 @@
 # Amendments copyright © 2025 Peter Cooper
 # MIT-licensed (original and amendments)
 
+# LET THE TOUR BEGIN!
+# ===================
+#
+# So.. we start off with imports, some housekeeping classes, and
+# then go through the incredibly geeky transformer part of the process.
+# The most 'interesting' stuff for newcomers is actually in the
+# bottom half of the file, so feel free to read from the bottom up
+# instead!
+
 import argparse
 import json
 import sys
@@ -242,10 +251,6 @@ class KVCache:
         self.offset += n_new
 
         return self.keys[..., :self.offset, :], self.values[..., :self.offset, :]
-
-
-
-
 
 # The model itself is a wrapper around the underlying model
 # which ends up stored in here..
