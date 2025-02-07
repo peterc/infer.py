@@ -456,7 +456,6 @@ class Model(nn.Module):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--model", default="mistralai/Mistral-7B-Instruct-v0.2")
-    parser.add_argument("--system-prompt", default=None)
     parser.add_argument("--prompt", "-p", default="Tell me a joke.")
     parser.add_argument("--max-tokens", "-m", type=int, default=100)
     parser.add_argument("--temp", type=float, default=0.0)
