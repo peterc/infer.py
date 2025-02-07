@@ -1,11 +1,5 @@
 #!/usr/bin/env python3
 
-# Original source copyright © 2023-2024 Apple Inc.
-# as at https://github.com/ml-explore/mlx-examples/tree/main/llms/mlx_lm
-#
-# Amendments copyright © 2025 Peter Cooper
-# MIT-licensed (original and amendments)
-
 #
 # infer.py
 # 
@@ -21,6 +15,12 @@
 # python infer.py --prompt 'Tell me a joke.' --model 'unsloth/Llama-3.2-1B-Instruct' --temp 0
 # (works without any approvals needed)
 #
+# -----
+# Original source copyright © 2023-2024 Apple Inc.
+# as at https://github.com/ml-explore/mlx-examples/tree/main/llms/mlx_lm
+#
+# Amendments copyright © 2025 Peter Cooper
+# MIT-licensed (original and amendments)
 
 import argparse
 import json
