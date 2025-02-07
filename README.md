@@ -76,7 +76,7 @@ def make_the_model_start_with_something(tokens_so_far, logits):
 model.generate(args.prompt, max_tokens=args.max_tokens, sampler=sampler, logits_processors=[make_the_model_start_with_something])
 ```
 
-You could also perhaps give the model a bit of a tic:
+You could also give the model a 'tic' of sorts:
 
 ```python
 token_stream = []
