@@ -481,7 +481,43 @@ def main():
         sampler = (lambda logits: mx.argmax(logits, axis=-1))
     
     # Kick the whole thing off
+    # Note that kwargs are kicked all the way down from here to the depths of the
+    # token generation process.. ideal for passing in logits processors, etc.
     model.generate(args.prompt, max_tokens=args.max_tokens, sampler=sampler)
+
+    # Here's two fun examples of how to use a logits processor
+    # ========================================================
+    #
+    # Here's how to force the model to start with a specific sequence of tokens!
+    # You'd uncomment all of this and comment out the model.generate line above.
+    #
+    #token_stream = model.tokenizer.encode("I refuse to answer that because", False, False)
+    #def make_the_model_start_with_something(tokens_so_far, logits):
+    #    nonlocal token_stream
+    #    if token_stream:
+    #        next_token = token_stream.pop(0)
+    #        logits[:, next_token] = 2000
+    #    return logits
+    #
+    #model.generate(args.prompt, max_tokens=args.max_tokens, sampler=sampler, logits_processors=[make_the_model_start_with_something])
+
+    # Here's a slightly more evil example of how to make the model randomly
+    # be forced to say something every now and then..
+    #
+    # token_stream = []
+    # import random
+    # def make_the_model_weird(tokens_so_far, logits):
+    #     nonlocal token_stream
+    #     if len(token_stream) > 0:
+    #         next_token = token_stream.pop(0)
+    #         logits[:, next_token] = 2000
+    #     else:
+    #       if random.random() < 0.08:
+    #           token_stream.extend(model.tokenizer.encode("What the??", False, False))
+
+    #     return logits
+    
+    # model.generate(args.prompt, max_tokens=args.max_tokens, sampler=sampler, logits_processors=[make_the_model_weird])
 
 if __name__ == "__main__":
     main()

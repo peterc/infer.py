@@ -12,7 +12,7 @@ When I saw [Apple's work on LLM inference tooling](https://github.com/ml-explore
 
 My other motivation is to easily play with dynamic temperature changes during inference (especially during 'thinking' stages) and with logit stuffing (i.e. forcing the model to generate certain things or to give it verbal 'tics') which can have some very curious results some of which I will include here later.
 
-For now, I will let you play instead.
+For now, I will let you play instead. The whole point is to dig around in infer.py, learn things, change things, force the model into hilarious situations, and have a laugh.
 
 ## How to run
 
