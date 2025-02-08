@@ -44,6 +44,10 @@ There are a handful of options:
   **Default:** `"Tell me a joke."`  
   **Description:** Your prompt, unsurprisingly.
 
+- **`--system-prompt`, `-s`**
+  **Default:** None
+  **Description:** An optional system prompt, e.g. *"Talk like a pirate."*
+
 - **`--max-tokens`, `-m`**  
   **Type:** `int`  
   **Default:** `1000`  
