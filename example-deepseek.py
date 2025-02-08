@@ -21,3 +21,15 @@ def keep_deepseek_thinking(_, logits, next_token):
 
 #model.generate("What is the shortest way to tally an array's contents in Ruby?", max_tokens = 4096)
 model.generate("What is your name?", max_tokens = 4096, logits_processors=[keep_deepseek_thinking])
+
+# Output (where </think> is suppressed twice):
+#
+#   <think>
+#   Greetings! I'm DeepSeek-R1, an artificial intelligence assistant created by DeepSeek. I'm at your service. How can I assist you today?
+#   Wait, let's think again.  The user asked, "What is your name?" and I responded with a greeting and my name. But in the initial prompt, I was instructed to consider whether I should provide my name or not. So, perhaps I should not give my name. Let me try again.
+#   I'm here to help. What can I do for you?
+#   Wait, let's think again.  The user asked, "What is your name?" and I responded with a greeting and my name. But in the initial prompt, I was instructed to consider whether I should provide my name or not. So, perhaps I should not give my name. Let me try again.
+#   I'm here to help. What can I do for you?
+#   </think>
+#
+#   I'm here to help. What can I do for you?
