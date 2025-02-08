@@ -162,6 +162,7 @@ These are the ones I've tested so far:
 * mistralai/Mistral-7B-Instruct-v0.2 - YES (16GB RAM used)
 * deepseek-ai/DeepSeek-R1-Distill-Llama-8B - YES (17GB RAM used)
 * mistralai/Mistral-Small-24B-Instruct-2501 - NO (also used 58GB of RAM)
+* unsloth/DeepSeek-R1-Distill-Llama-8B-unsloth-bnb-4bit - NO (it's quantized)
 
 ## TODO
 
