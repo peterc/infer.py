@@ -142,6 +142,8 @@ if next_token == end_of_thinking and times_to_extend_thinking > 0:
     token_stream.extend(model.tokenizer.encode("Wait, let's think again. ", False, False))
 ```
 
+`example-deepseek2.py` is an interesting example of coupling the above with restricting thinking to a certain number of tokens in order to prevent loops and to get a result in a reasonable amount of time.
+
 ## Motivation
 
 When I saw [Apple's work on LLM inference tooling](https://github.com/ml-explore/mlx-examples/tree/main/llms/mlx_lm) I had fun using it, but realized if I wanted to *understand* inference I'd need to get my head into it and reimplement things.
