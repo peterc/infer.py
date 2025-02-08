@@ -1,7 +1,7 @@
 # inferMLX - A quick way to do LLM inference on macOS with MLX
 *(and `infer.py` - an annotated single file LLM inference tool)*
 
-inferMLX is a package for easily doing LLM inference of Llama-based models on macOS, thanks to Apple's MLX project.
+inferMLX is a package for easily doing LLM inference of Llama-based models on macOS, thanks to Apple's MLX project. **The main feature is being able to manipulate the inference process** for either educational or entertainment reasons.
 
 ```
 pip install infermlx
@@ -12,19 +12,11 @@ import infermlx.infer as infermlx
 model = infermlx.Model.load_model()
 model.generate("Tell me a joke")
 ```
-**The main feature is being able to manipulate the inference process** for either educational or entertainment reasons.
+
+> A man walked into a library and asked the librarian,
+> "Do you have any books on Pavlov's dogs and Schrödinger's cat?"
 
 (`infer.py`, in the `infermlx` folder, is a *single* Python program with the fewest parts you need to do inference of Llama-compatible models on macOS. On a modern Mac with Python and the dependencies installed, `python infer.py --prompt 'Tell me a joke.'` should result in a cringeworthy joke.)
-
-## Motivation
-
-When I saw [Apple's work on LLM inference tooling](https://github.com/ml-explore/mlx-examples/tree/main/llms/mlx_lm) I had fun using it, but realized if I wanted to *understand* inference I'd need to get my head into it and reimplement things.
-
-`infer.py` (and then the overall `infermlx` package) is the result. I've annotated the source to provide guidance. Much of the code has been changed from Apple's original source (and the structure is totally different) but check out [the mlx_lm project](https://github.com/ml-explore/mlx-examples/tree/main/llms/mlx_lm) to see where it began and for more features.
-
-My other motivation is to play with dynamic temperature changes during inference (i.e during 'thinking') and with logit stuffing (i.e. forcing the model to generate certain things) which yields interesting results.
-
-For now, I will let you play. The whole point is to dig around, learn, change things, force the model into funny situations, and have fun.
 
 ## How to use the package
 
@@ -135,3 +127,22 @@ Which yields something akin to this:
 > with curiosity crap! I mean, curiosity and wonder.
 
 Let your imagination run wild! (You could also detect certain things it has said and then force its ongoing response from there.)
+
+## Motivation
+
+When I saw [Apple's work on LLM inference tooling](https://github.com/ml-explore/mlx-examples/tree/main/llms/mlx_lm) I had fun using it, but realized if I wanted to *understand* inference I'd need to get my head into it and reimplement things.
+
+`infer.py` (and then the overall `infermlx` package) is the result. I've annotated the source to provide guidance. Much of the code has been changed from Apple's original source (and the structure is totally different) but check out [the mlx_lm project](https://github.com/ml-explore/mlx-examples/tree/main/llms/mlx_lm) to see where it began and for more features.
+
+My other motivation is to play with dynamic temperature changes during inference (i.e during 'thinking') and with logit stuffing (i.e. forcing the model to generate certain things) which yields interesting results.
+
+For now, I will let you play. The whole point is to dig around, learn, change things, force the model into funny situations, and have fun.
+
+## TODO
+
+* Add support for LoRA adapters to add fine tuning fun to the mix
+
+## Credits
+
+* The Apple team for creating MLX and the basis for what eventually morphed into this project.
+* Everyone making and training models.
