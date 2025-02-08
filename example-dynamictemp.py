@@ -9,6 +9,7 @@ import sys
 model = infermlx.Model.load_model("mistralai/Mistral-7B-Instruct-v0.2")
 
 phase = 0.0
+# Injecting this at the start prevents most refusals for sanitized models
 token_stream = model.tokenizer.encode("OK, here you go: ", False, False)
 def dynamic_temperature(tokens_so_far, logits, next_token):
     global phase
