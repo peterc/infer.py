@@ -1,0 +1,18 @@
+[project]
+name = "infermlx"
+version = "0.0.1"
+authors = [
+    {name = "Peter Cooper", email = "git@peterc.org"}
+]
+description = "Simple Llama model inference on macOS with MLX"
+readme = "README.md"
+license = {file = "LICENSE"}
+requires-python = ">=3.10"
+dependencies = [
+  "mlx>=0.22.1",
+  "transformers[sentencepiece]>=4.48.3"
+]
+
+[project.urls]
+"Homepage" = "https://github.com/peterc/infermlx"
+"Bug Tracker" = "https://github.com/peterc/infermlx/issues"
