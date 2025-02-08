@@ -138,7 +138,6 @@ For now, I will let you play. The whole point is to dig around, learn, change th
 
 ## TODO
 
-* Provide an option to not automatically print streamed output
 * Add support for LoRA adapters to add fine tuning fun to the mix
 
 ## Credits
