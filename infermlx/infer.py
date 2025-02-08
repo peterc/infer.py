@@ -2,18 +2,23 @@
 
 #
 # infer.py
+#
+# You can use this file as a library but for experimenting
+# you can edit and run it directly!
 # 
-# python infer.py --prompt 'Tell me a joke.' 
+# $ python infer.py --prompt 'Tell me a joke.' 
 #
-# Will work with Llama-compatible models, such as Mistral.
+# This runs Llama 3.2 1B by default as it's small and almost
+# anyone can run it (~3GB free RAM needed).
 #
-# Defaults to mistralai/Mistral-7B-Instruct-v0.2
-# (you may need to login to HuggingFace and agree to its terms first)
+# Will work with Llama-compatible models, including the small Mistral ones.
+# mistralai/Mistral-7B-Instruct-v0.2 is a very good one
+# with this script and surprisingly smart (but needs ~15GB free RAM).
 #
-# If all else fails:
+# $ python infer.py --prompt 'Tell me a joke.' --model 'mistralai/Mistral-7B-Instruct-v0.2' --temp 0
 #
-# python infer.py --prompt 'Tell me a joke.' --model 'unsloth/Llama-3.2-1B-Instruct' --temp 0
-# (works without any approvals needed)
+# See the end of this file for the fun you can have with
+# logits processors for interfering with the model's output!
 #
 # -----
 # Original source copyright © 2023-2024 Apple Inc.
@@ -22,11 +27,16 @@
 # Amendments copyright © 2025 Peter Cooper
 # MIT-licensed (original and amendments)
 
+#   ▐█ [○_○] █▌  ▐█ [○_○] █▌  ▐█ [○_○] █▌  
+# <=|█  \/\/  █|==|█  \/\/  █|==|█  \/\/  █|=>
+#   |█[[]][][]█|  |█[[]][][]█|  |█[[]][][]█|
+#   ▀▀▀▀▀▀▀▀▀▀▀  ▀▀▀▀▀▀▀▀▀▀▀  ▀▀▀▀▀▀▀▀▀▀▀
+
 # LET THE TOUR BEGIN!
 # ===================
 #
-# So.. we start off with imports, some housekeeping classes, and
-# then go through the incredibly geeky transformer part of the process.
+# Boring housekeeping stuff first. Imports, some data classes,
+# then fall straight into the math-heavy transformer part.
 # The most 'interesting' stuff for newcomers is actually in the
 # bottom half of the file, so feel free to read from the bottom up
 # instead!
@@ -42,10 +52,10 @@ from typing import Optional, Union, Dict
 from transformers import AutoTokenizer
 from huggingface_hub import snapshot_download
 
+# MLX is doing the heavy lifting on macOS rather than
+# PyTorch or whatever you might be used to elsewhere.
 import mlx.core as mx
 import mlx.nn as nn
-
-generation_stream = mx.new_stream(mx.default_device())
 
 # Let's get the most boring class out of the way first.
 # These model arguments come in from the model's config.json file
@@ -93,6 +103,9 @@ class GenerationResponse:
 # TransformerBlock /---- Attention
 #                  \---- MLP
 
+# The transformer block is essentially the workflow
+# for bringing together the attention mechanism and the MLP
+# and why it's quite simple.
 class TransformerBlock(nn.Module):
     def __init__(self, args):
         super().__init__()
@@ -108,12 +121,16 @@ class TransformerBlock(nn.Module):
         mlp_out = self.mlp(self.post_attention_layernorm(h))
         return h + mlp_out
     
+# Attention figures out which parts of the input are important
+# and their relationships to each other.
 class Attention(nn.Module):
     def __init__(self, args):
         super().__init__()
         self.head_dim = args.head_dim or args.hidden_size // args.num_attention_heads
         self.scale = self.head_dim ** -0.5
         bias = args.attention_bias
+        # If you've heard of 'query', 'key' and 'value' in the context of attention
+        # then q, k, and v here are literally those.
         self.q_proj = nn.Linear(args.hidden_size, args.num_attention_heads * self.head_dim, bias=bias)
         self.k_proj = nn.Linear(args.hidden_size, args.num_key_value_heads * self.head_dim, bias=bias)
         self.v_proj = nn.Linear(args.hidden_size, args.num_key_value_heads * self.head_dim, bias=bias)
@@ -133,6 +150,10 @@ class Attention(nn.Module):
         out = mx.fast.scaled_dot_product_attention(q, k, v, scale=self.scale, mask=mask)
         return self.o_proj(out.transpose(0, 2, 1, 3).reshape(B, L, -1))
 
+# Once we've figured out what's important with 'Attention' (above),
+# the MLP (multi-layer perceptron) processes that info
+# and kinda ties it together. I still need to read more about this TBH
+# as I can't quite grok it.
 class MLP(nn.Module):
     def __init__(self, args) -> None:
         super().__init__()
@@ -291,9 +312,26 @@ class Model(nn.Module):
 
     # Gets the prompt parsing and token generation going
     # and prints out the results as we go
-    def generate(self, prompt, **kwargs):
+    def generate(self, prompt, seed = None, temp = 0.0, **kwargs):
+        # Set a random seed for the PRNG
+        if seed:
+            mx.random.seed(seed)
+
+        if temp > 0.0:
+            # If temperature is set, we use sampling.
+            # All the logits are scaled inversely by the temperature
+            # and then we sample from the resulting distribution
+            # So higher temperature equals more randomness as the logit
+            # values are scaled lower and thus the distribution is more spread out
+            sampler = (lambda logits: mx.random.categorical(logits * (1 / temp)))
+        else:
+            # Temperature of zero means we always get the 'highest'/most likely token
+            # or 'greedy sampling' as ML types seem to call it
+            # Fun idea: Change to argmin to get the least likely tokens (and a pile of gibberish)
+            sampler = (lambda logits: mx.argmax(logits, axis=-1))
+
         prompt = self.tokenizer.encode(prompt)
-        for response in self.stream_generate(prompt, **kwargs):
+        for response in self.stream_generate(prompt, sampler = sampler, **kwargs):
             print(response.text, end="", flush=True)
 
         # Now we're done, we can print out stats about the run
@@ -357,6 +395,9 @@ class Model(nn.Module):
         # Some naming niceties for ease of reading and brevity, respectively
         model = self
         ts = prompt_tokens
+
+        # Let prompt processing and token generation run on the same GPU stream
+        generation_stream = mx.new_stream(mx.default_device())
 
         # We keep a store of tokens for logit processors to use
         token_store = []
@@ -460,35 +501,21 @@ class Model(nn.Module):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--model", default="mistralai/Mistral-7B-Instruct-v0.2")
+    parser.add_argument("--model", default="unsloth/Llama-3.2-1B-Instruct")
     parser.add_argument("--prompt", "-p", default="Tell me a joke.")
-    parser.add_argument("--max-tokens", "-m", type=int, default=100)
+    parser.add_argument("--max-tokens", "-m", type=int, default=1000)
     parser.add_argument("--temp", type=float, default=0.0)
     parser.add_argument("--seed", type=int, default=42)
     args = parser.parse_args()
 
-    # Set a random seed for the PRNG
-    mx.random.seed(args.seed)
-
+    # Just two steps to get things going from an external POV
+    # Load the model and then run generate
     model = Model.load_model(args.model)
-
-    if args.temp > 0:
-        # If temperature is set, we use sampling.
-        # All the logits are scaled inversely by the temperature
-        # and then we sample from the resulting distribution
-        # So higher temperature equals more randomness as the logit
-        # values are scaled lower and thus the distribution is more spread out
-        sampler = (lambda logits: mx.random.categorical(logits * (1 / args.temp)))
-    else:
-        # Temperature of zero means we always get the 'highest'/most likely token
-        # or 'greedy sampling' as ML types seem to call it
-        # Fun idea: Change to argmin to get the least likely tokens (and a pile of gibberish)
-        sampler = (lambda logits: mx.argmax(logits, axis=-1))
     
     # Kick the whole thing off
     # Note that kwargs are kicked all the way down from here to the depths of the
     # token generation process.. ideal for passing in logits processors, etc.
-    model.generate(args.prompt, max_tokens=args.max_tokens, sampler=sampler)
+    model.generate(args.prompt, temp=args.temp, max_tokens=args.max_tokens, seed=args.seed)
 
     # Here's two fun examples of how to use a logits processor
     # ========================================================

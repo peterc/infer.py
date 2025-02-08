@@ -30,16 +30,12 @@ Then:
 python infer.py --prompt 'Tell me a joke.' 
 ```
 
-It defaults to `mistralai/Mistral-7B-Instruct-v0.2` which you may need to approve the terms of on HuggingFace, so if you'd rather not run into any such problems, you can try this instead:
-
-```
-python infer.py --prompt 'Tell me a joke.' --model 'unsloth/Llama-3.2-1B-Instruct'
-```
+It defaults to `unsloth/Llama-3.2-1B-Instruct` as it's free to use, quick, and only needs 4GB of RAM for inference out of the box. However, `mistralai/Mistral-7B-Instruct-v0.2` is another good one to use, it's very smart, but needs 16GB of free RAM.
 
 There are a handful of options:
 
 - **`--model`**  
-  **Default:** `"mistralai/Mistral-7B-Instruct-v0.2"`  
+  **Default:** `"unsloth/Llama-3.2-1B-Instruct"`  
   **Description:** The model to load for inference. Can be a HuggingFace repo or local directory.
 
 - **`--prompt`, `-p`**  
@@ -48,7 +44,7 @@ There are a handful of options:
 
 - **`--max-tokens`, `-m`**  
   **Type:** `int`  
-  **Default:** `100`  
+  **Default:** `1000`  
   **Description:** The maximum number of tokens to generate.
 
 - **`--temp`**  
