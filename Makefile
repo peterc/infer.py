@@ -12,7 +12,7 @@ upload:
 	twine upload dist/*
 
 release: build upload
-	git add pyproject.toml setup.cfg CHANGELOG.md
+	git add pyproject.toml CHANGELOG.md
 	git commit -m "Release version $(VERSION)"
 	git tag v$(VERSION)
 	git push origin v$(VERSION)
