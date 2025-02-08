@@ -148,7 +148,7 @@ if next_token == end_of_thinking and times_to_extend_thinking > 0:
 
 When I saw [Apple's work on LLM inference tooling](https://github.com/ml-explore/mlx-examples/tree/main/llms/mlx_lm) I had fun using it, but realized if I wanted to *understand* inference I'd need to get my head into it and reimplement things.
 
-`infer.py` (and then the overall `infermlx` package) is the result. I've annotated the source to provide guidance. Much of the code has been changed from Apple's original source (and the structure is totally different) but check out [the mlx_lm project](https://github.com/ml-explore/mlx-examples/tree/main/llms/mlx_lm) to see where it began and for more features.
+`infer.py` (and then the overall `infermlx` package) is the result. I've annotated the source to provide guidance. Much of the code has been changed from Apple's original source and the structure is totally different (but equally much is directly from it - hence sharing the same license). Check out [the mlx_lm project](https://github.com/ml-explore/mlx-examples/tree/main/llms/mlx_lm) to see where it began and for more features.
 
 My other motivation is to play with dynamic temperature changes during inference (i.e during 'thinking') and with logit stuffing (i.e. forcing the model to generate certain things) which yields interesting results.
 
