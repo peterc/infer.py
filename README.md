@@ -27,6 +27,8 @@ pip install -r requirements.txt
 Then:
 
 ```
+python -m infermlx.infer --prompt 'Tell me a joke.' 
+# OR if you choose to use infer.py on its own:
 python infer.py --prompt 'Tell me a joke.' 
 ```
 
