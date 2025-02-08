@@ -19,9 +19,9 @@ def dynamic_temperature(tokens_so_far, logits, next_token):
         return logits
 
     # Hard-coded temperature parameters
-    min_temp = 0.3      # lowest temperature value
-    max_temp = 1.4      # highest temperature value
-    cycle_length = 40   # number of tokens per full sine wave cycle
+    min_temp = 0.8      # lowest temperature value
+    max_temp = 1.5      # highest temperature value
+    cycle_length = 30   # number of tokens per full sine wave cycle
 
     # Compute current temperature using a sine wave pattern.
     mid = (min_temp + max_temp) / 2
