@@ -126,6 +126,22 @@ Which yields something akin to this:
 
 Let your imagination run wild! (You could also detect certain things it has said and then force its ongoing response from there.)
 
+## Making DeepSeek 'think' for longer
+
+A lot of people have been talking about making DeepSeek models 'think' for longer by suppressing their think closing tokens. We now have that experiment in `example-deepseek.py`!
+
+Here's the core of the logit processor:
+
+```python
+# </think> is a special token in DeepSeek – you can't
+# just tokenize </think> and expect it to work, alas.
+end_of_thinking = 128014
+
+if next_token == end_of_thinking and times_to_extend_thinking > 0:
+    times_to_extend_thinking -= 1
+    token_stream.extend(model.tokenizer.encode("Wait, let's think again. ", False, False))
+```
+
 ## Motivation
 
 When I saw [Apple's work on LLM inference tooling](https://github.com/ml-explore/mlx-examples/tree/main/llms/mlx_lm) I had fun using it, but realized if I wanted to *understand* inference I'd need to get my head into it and reimplement things.
