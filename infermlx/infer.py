@@ -312,7 +312,7 @@ class Model(nn.Module):
 
     # Gets the prompt parsing and token generation going
     # and prints out the results as we go
-    def generate(self, prompt, seed = None, temp = 0.0, **kwargs):
+    def generate(self, prompt, system_prompt = None, seed = None, temp = 0.0, **kwargs):
         # Set a random seed for the PRNG
         if seed:
             mx.random.seed(seed)
@@ -330,8 +330,16 @@ class Model(nn.Module):
             # Fun idea: Change to argmin to get the least likely tokens (and a pile of gibberish)
             sampler = (lambda logits: mx.argmax(logits, axis=-1))
 
-        prompt = self.tokenizer.encode(prompt)
-        for response in self.stream_generate(prompt, sampler = sampler, **kwargs):
+        # Compile the model's chat template along with system prompt, if present
+        messages = []
+        if system_prompt:
+            messages.append({"role": "system", "content": system_prompt})
+        messages.append({"role": "user", "content": prompt})
+        prompt_tokens = self.tokenizer.apply_chat_template(
+            messages, tokenize=True, add_generation_prompt=True
+        )
+
+        for response in self.stream_generate(prompt_tokens, sampler = sampler, **kwargs):
             print(response.text, end="", flush=True)
 
         # Now we're done, we can print out stats about the run
@@ -344,7 +352,6 @@ class Model(nn.Module):
     # generate -> stream_generate -> generate_step
     # stream_generate tracks the timing and when to stop
     def stream_generate(self, prompt, **kwargs):
-        model = self
         tokenizer = self.tokenizer
         prompt = mx.array(prompt)
         detokenizer = tokenizer.detokenizer
@@ -504,6 +511,7 @@ def main():
     parser.add_argument("--model", default="unsloth/Llama-3.2-1B-Instruct")
     parser.add_argument("--prompt", "-p", default="Tell me a joke.")
     parser.add_argument("--max-tokens", "-m", type=int, default=1000)
+    parser.add_argument("--system-prompt", "-s", default=None)
     parser.add_argument("--temp", type=float, default=0.0)
     parser.add_argument("--seed", type=int, default=42)
     args = parser.parse_args()
@@ -515,7 +523,7 @@ def main():
     # Kick the whole thing off
     # Note that kwargs are kicked all the way down from here to the depths of the
     # token generation process.. ideal for passing in logits processors, etc.
-    model.generate(args.prompt, temp=args.temp, max_tokens=args.max_tokens, seed=args.seed)
+    model.generate(args.prompt, system_prompt=args.system_prompt, temp=args.temp, max_tokens=args.max_tokens, seed=args.seed)
 
     # Here's two fun examples of how to use a logits processor
     # ========================================================
