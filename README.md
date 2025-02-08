@@ -1,9 +1,9 @@
-# inferMLX - Easy LLM inference on macOS with MLX
+# inferMLX - Easy, dynamically controllable LLM inference on macOS with MLX
 *(including `infer.py` - LLM inference in one annotated Python file!)*
 
 [![PyPI](https://img.shields.io/pypi/v/infermlx.svg)](https://pypi.org/project/infermlx/)
 
-An easy library for doing LLM inference of Llama-based models on macOS, thanks to Apple's MLX project. **The main feature is being able to manipulate the inference process** for either educational or entertainment reasons.
+An easy library for doing LLM inference of Llama-based models on macOS, thanks to Apple's MLX project. **The main feature is being able to manipulate the inference process while it's running.**
 
 ## Basic installation and usage
 

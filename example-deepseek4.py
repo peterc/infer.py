@@ -3,6 +3,7 @@
 # generation phase? We actually get something good!
 
 import math
+import sys
 import infermlx.infer as infermlx
 model = infermlx.Model.load_model("deepseek-ai/DeepSeek-R1-Distill-Llama-8B")
 
@@ -61,7 +62,11 @@ def keep_deepseek_thinking(tokens, logits, next_token):
         
     return logits
 
-model.generate("Generate an HTML page with fun colors, CSS, and the word 'infermlx' in the middle bouncing around in a funny way.",
+prompt = "Generate an HTML page with fun colors, CSS, and the word 'infermlx' in the middle bouncing around in a funny way."
+if len(sys.argv) > 1:
+    prompt = sys.argv[1]
+
+model.generate(prompt,
                temp=0.0,
                system_prompt="You are a creative Web designer.",
                max_tokens = 4096,
