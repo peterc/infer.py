@@ -139,6 +139,7 @@ For now, I will let you play. The whole point is to dig around, learn, change th
 ## TODO
 
 * Add support for LoRA adapters to add fine tuning fun to the mix
+* Support quantized models? This sounds hard but might not be!
 
 ## Credits
 
