@@ -1,9 +1,13 @@
 # inferMLX - Easy LLM inference on macOS with MLX
 *(including `infer.py` - LLM inference in one annotated Python file!)*
 
-inferMLX is a package for easily doing LLM inference of Llama-based models on macOS, thanks to Apple's MLX project. **The main feature is being able to manipulate the inference process** for either educational or entertainment reasons.
+[![PyPI](https://img.shields.io/pypi/v/infermlx.svg)](https://pypi.org/project/infermlx/)
 
-```
+An easy library for doing LLM inference of Llama-based models on macOS, thanks to Apple's MLX project. **The main feature is being able to manipulate the inference process** for either educational or entertainment reasons.
+
+## Basic installation and usage
+
+```bash
 pip install infermlx
 ```
 
@@ -20,19 +24,19 @@ Look at the `example-*.py` scripts for more ideas. You can also pass in paramete
 
 (`infer.py`, in the `infermlx` folder, is a *single* Python program with the fewest parts you need to do inference of Llama-compatible models on macOS. On a modern Mac with Python and the dependencies installed, `python infer.py --prompt 'Tell me a joke.'` should result in a cringeworthy joke.)
 
-## How to run `infer.py` directly
+## Running `infer.py` directly
 
-If you download the repo and want to just play with infer.py, you can do `pip install -r requirements.txt` and run `infer.py` like so:
+If you download the repo and want to play with `infer.py`, do `pip install -r requirements.txt` and run `infer.py` like so:
 
-```
+```bash
 python -m infermlx.infer --prompt 'Tell me a joke.' 
 # OR if you end up in the infermlx directory
 python infer.py --prompt 'Tell me a joke.' 
 ```
 
-It defaults to `unsloth/Llama-3.2-1B-Instruct` as it's free to use, quick, and only needs 4GB of RAM for inference out of the box. However, `mistralai/Mistral-7B-Instruct-v0.2` is another good one to use, it's very smart, but needs 16GB of free RAM.
+It defaults to `unsloth/Llama-3.2-1B-Instruct` as it's free to use, quick, and only needs 4GB of RAM for inference. `mistralai/Mistral-7B-Instruct-v0.2` is a better model by far but needs >16GB of RAM free.
 
-`infer.py` has a handful of options:
+`infer.py` can be run with several options:
 
 - **`--model`**  
   **Default:** `"unsloth/Llama-3.2-1B-Instruct"`  
