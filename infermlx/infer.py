@@ -539,7 +539,7 @@ def main():
     #        logits[:, next_token] = 2000
     #    return logits
     #
-    #model.generate(args.prompt, max_tokens=args.max_tokens, sampler=sampler, logits_processors=[make_the_model_start_with_something])
+    #model.generate(args.prompt, max_tokens=args.max_tokens, logits_processors=[make_the_model_start_with_something])
 
     # Here's a slightly more evil example of how to make the model randomly
     # be forced to say something every now and then..
@@ -557,7 +557,7 @@ def main():
 
     #     return logits
     
-    # model.generate(args.prompt, max_tokens=args.max_tokens, sampler=sampler, logits_processors=[make_the_model_weird])
+    # model.generate(args.prompt, max_tokens=args.max_tokens, logits_processors=[make_the_model_weird])
 
 if __name__ == "__main__":
     main()

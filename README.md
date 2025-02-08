@@ -16,23 +16,9 @@ model.generate("Tell me a joke")
 > A man walked into a library and asked the librarian,
 > "Do you have any books on Pavlov's dogs and Schrödinger's cat?"
 
+Look at the `example-*.py` scripts for more ideas. You can also pass in parameters to `generate`: `system_prompt`, `max_tokens`, `seed`, and `logits_processors`.
+
 (`infer.py`, in the `infermlx` folder, is a *single* Python program with the fewest parts you need to do inference of Llama-compatible models on macOS. On a modern Mac with Python and the dependencies installed, `python infer.py --prompt 'Tell me a joke.'` should result in a cringeworthy joke.)
-
-## How to use the package
-
-You need Python 3.10+ but then it's just:
-
-```
-pip install infermlx
-```
-
-```python
-import infermlx.infer as infermlx
-model = infermlx.Model.load_model()
-model.generate("Tell me a joke")
-```
-
-Look at the `example-*.py` scripts for more ideas.
 
 ## How to run `infer.py` directly
 
