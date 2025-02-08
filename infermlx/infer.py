@@ -480,7 +480,7 @@ class Model(nn.Module):
         return model_path
 
     @classmethod
-    def load_model(cls, model_path):
+    def load_model(cls, model_path = "unsloth/Llama-3.2-1B-Instruct"):
         # First we need to get the model path (see above)
         model_path = cls.get_model_path(model_path)
 

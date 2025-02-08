@@ -98,7 +98,3 @@ model.generate(args.prompt, max_tokens=args.max_tokens, sampler=sampler, logits_
 ```
 
 Let your imagination run wild! (You could also detect certain things it has said and then force its ongoing response from there.)
-
-## TODO
-
-* System prompting
