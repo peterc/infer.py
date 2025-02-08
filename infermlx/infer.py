@@ -312,7 +312,9 @@ class Model(nn.Module):
 
     # Gets the prompt parsing and token generation going
     # and prints out the results as we go
-    def generate(self, prompt, system_prompt = None, seed = None, temp = 0.0, **kwargs):
+    def generate(self, prompt, realtime = True, system_prompt = None, seed = None, temp = 0.0, **kwargs):
+        output = ""
+        
         # Set a random seed for the PRNG
         if seed:
             mx.random.seed(seed)
@@ -340,13 +342,18 @@ class Model(nn.Module):
         )
 
         for response in self.stream_generate(prompt_tokens, sampler = sampler, **kwargs):
-            print(response.text, end="", flush=True)
+            output += response.text
+            if realtime:
+                print(response.text, end="", flush=True)
 
-        # Now we're done, we can print out stats about the run
-        print("\n\n", file=sys.stderr)
-        print(f"    Prompt: {response.prompt_tokens} tok, {response.prompt_tps:.3f} tok/s", file=sys.stderr)
-        print(f"Generation: {response.generation_tokens} tok, {response.generation_tps:.3f} tok/s", file=sys.stderr)
-        print(f"  Peak mem: {response.peak_memory:.1f}GB", file=sys.stderr)
+        if realtime:      
+            # Now we're done, we can print out stats about the run
+            print("\n\n", file=sys.stderr)
+            print(f"    Prompt: {response.prompt_tokens} tok, {response.prompt_tps:.3f} tok/s", file=sys.stderr)
+            print(f"Generation: {response.generation_tokens} tok, {response.generation_tps:.3f} tok/s", file=sys.stderr)
+            print(f"  Peak mem: {response.peak_memory:.1f}GB", file=sys.stderr)
+
+        return output, response
 
     # So there's a chain of generators..
     # generate -> stream_generate -> generate_step

@@ -20,7 +20,15 @@ model.generate("Tell me a joke")
 > A man walked into a library and asked the librarian,
 > "Do you have any books on Pavlov's dogs and Schrödinger's cat?"
 
-Look at the `example-*.py` scripts for more ideas. You can also pass in parameters to `generate`: `system_prompt`, `max_tokens`, `seed`, and `logits_processors`.
+Alternatively, if you don't want it to output in real-time to stdout:
+
+```python
+output, metadata = model.generate("Tell me a joke", temp=1.8, max_tokens=50, realtime=False)
+print(output)
+print(metadata.generation_tps)
+```
+
+Look at the `example-*.py` scripts for more ideas. You can also pass in parameters to `generate`: `system_prompt`, `max_tokens`, `seed`, `realtime` and `logits_processors`.
 
 (`infer.py`, in the `infermlx` folder, is a *single* Python program with the fewest parts you need to do inference of Llama-compatible models on macOS. On a modern Mac with Python and the dependencies installed, `python infer.py --prompt 'Tell me a joke.'` should result in a cringeworthy joke.)
 
@@ -130,6 +138,7 @@ For now, I will let you play. The whole point is to dig around, learn, change th
 
 ## TODO
 
+* Provide an option to not automatically print streamed output
 * Add support for LoRA adapters to add fine tuning fun to the mix
 
 ## Credits
