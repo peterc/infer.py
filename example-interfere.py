@@ -11,7 +11,7 @@ import infermlx.infer as infermlx
 model = infermlx.Model.load_model("mistralai/Mistral-7B-Instruct-v0.2")
 
 token_stream = []
-def interfere_with_the_output(tokens_so_far, logits):
+def interfere_with_the_output(tokens_so_far, logits, next_token):
     if len(token_stream) > 0:
         next_token = token_stream.pop(0)
         logits[:, next_token] = 2000

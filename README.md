@@ -136,10 +136,24 @@ My other motivation is to play with dynamic temperature changes during inference
 
 For now, I will let you play. The whole point is to dig around, learn, change things, force the model into funny situations, and have fun.
 
+## Model support
+
+Llama-only for now to keep the code simple.
+
+These are the ones I've tested so far:
+
+* unsloth/Llama-3.2-1B-Instruct - YES (3GB RAM used)
+* mistralai/Mistral-7B-Instruct-v0.2 - YES (16GB RAM used)
+* deepseek-ai/DeepSeek-R1-Distill-Llama-8B - YES (17GB RAM used)
+* mistralai/Mistral-Small-24B-Instruct-2501 - NO (also used 58GB of RAM)
+* mistralai/Mistral-Nemo-Instruct-2407 - STILL TESTING
+
 ## TODO
 
 * Add support for LoRA adapters to add fine tuning fun to the mix
-* Support quantized models? This sounds hard but might not be!
+* Support quantized models. This sounds hard but might not be!
+* Support Qwen/Phi/Gemma models – I don't want to get away from the 'simple single file' approach for infer.py though, so this may not be viable.
+* Support Mistral Small 24B somehow - it's a ridiculously good model.
 
 ## Credits
 

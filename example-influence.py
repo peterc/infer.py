@@ -6,7 +6,7 @@ import infermlx.infer as infermlx
 model = infermlx.Model.load_model()
 
 token_stream = model.tokenizer.encode("Here's one about pirates.", False, False)
-def make_the_model_start_with_something(tokens_so_far, logits):
+def make_the_model_start_with_something(tokens_so_far, logits, next_token):
     if token_stream:
         next_token = token_stream.pop(0)
         logits[:, next_token] = 2000

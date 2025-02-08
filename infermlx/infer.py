@@ -314,7 +314,7 @@ class Model(nn.Module):
     # and prints out the results as we go
     def generate(self, prompt, realtime = True, system_prompt = None, seed = None, temp = 0.0, **kwargs):
         output = ""
-        
+
         # Set a random seed for the PRNG
         if seed:
             mx.random.seed(seed)
@@ -414,7 +414,7 @@ class Model(nn.Module):
         generation_stream = mx.new_stream(mx.default_device())
 
         # We keep a store of tokens for logit processors to use
-        token_store = []
+        token_store = None
 
         # We keep a cache for each layer of the model
         prompt_cache = [KVCache() for _ in range(len(model.layers))]
@@ -430,10 +430,12 @@ class Model(nn.Module):
                 # This block is just convenience for the logit processors
                 # which will want to know the tokens that have been generated
                 if logits_processors:
+                    logprobs = logits - mx.logsumexp(logits, axis=-1, keepdims=True)
+                    y_next = sampler(logprobs)
                     nonlocal token_store
-                    token_store.append(tokens)
+                    token_store = mx.concat([token_store, tokens]) if token_store is not None else tokens
                     for processor in logits_processors:
-                        logits = processor(token_store, logits)
+                        logits = processor(token_store, logits, y_next.tolist()[0])
 
                 # We use our sampler to get our winning token!
                 logprobs = logits - mx.logsumexp(logits, axis=-1, keepdims=True)
