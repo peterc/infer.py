@@ -1,40 +1,60 @@
-# infer.py - Annotated single file LLM inference with MLX / Apple Silicon
+# inferMLX - A quick way to do LLM inference on macOS with MLX
+# (and `infer.py` - an annotated single file LLM inference tool)
 
-infer.py is a *single* Python program with the fewest parts you need to do inference of Llama-compatible models on macOS (that I've figured out so far).
+inferMLX is a package for easily doing LLM inference of Llama-based models on macOS, thanks to Apple's MLX project.
 
-On a modern Mac with Python and the dependencies installed, `python infer.py --prompt 'Tell me a joke.'` should result in a cringeworthy joke.
+```
+pip install infermlx
+```
 
-The big win for you is **being able to manipulate the inference process** for education or entertainment (as shown in some examples later).
+```python
+import infermlx.infer as infermlx
+model = infermlx.Model.load_model()
+model.generate("Tell me a joke")
+```
+**The main feature is being able to manipulate the inference process** for either educational or entertainment reasons.
+
+(`infer.py`, in the `infermlx` folder, is a *single* Python program with the fewest parts you need to do inference of Llama-compatible models on macOS. On a modern Mac with Python and the dependencies installed, `python infer.py --prompt 'Tell me a joke.'` should result in a cringeworthy joke.)
 
 ## Motivation
 
-When I saw [Apple's work on LLM inference tooling](https://github.com/ml-explore/mlx-examples/tree/main/llms/mlx_lm) I had fun using it, but realized if I really wanted to *understand* inference I'd need to rework it, reimplement parts of it, and get my head into the whole process.
+When I saw [Apple's work on LLM inference tooling](https://github.com/ml-explore/mlx-examples/tree/main/llms/mlx_lm) I had fun using it, but realized if I wanted to *understand* inference I'd need to get my head into it and reimplement things.
 
-`infer.py` is the result of that. I've annotated the source with lots of comments to provide guidance to anyone as naive as me, so check it out. Much of the code has been changed from Apple's original source (and the structure is totally different) but you can go to [the mlx_lm project](https://github.com/ml-explore/mlx-examples/tree/main/llms/mlx_lm) if you want to see where all of this began and to use something more fully featured.
+`infer.py` (and then the overall `infermlx` package) is the result. I've annotated the source to provide guidance. Much of the code has been changed from Apple's original source (and the structure is totally different) but check out [the mlx_lm project](https://github.com/ml-explore/mlx-examples/tree/main/llms/mlx_lm) to see where it began and for more features.
 
-My other motivation is to easily play with dynamic temperature changes during inference (especially during 'thinking' stages) and with logit stuffing (i.e. forcing the model to generate certain things or to give it verbal 'tics') which can have some very curious results some of which I will include here later.
+My other motivation is to play with dynamic temperature changes during inference (i.e during 'thinking') and with logit stuffing (i.e. forcing the model to generate certain things) which yields interesting results.
 
-For now, I will let you play instead. The whole point is to dig around in infer.py, learn things, change things, force the model into hilarious situations, and have a laugh.
+For now, I will let you play. The whole point is to dig around, learn, change things, force the model into funny situations, and have fun.
 
-## How to run
+## How to use the package
 
-You need Python 3.11+ (it *may* work on lower), MLX and some of the Transformers stuff installed:
+You need Python 3.10+ but then it's just:
 
 ```
-pip install -r requirements.txt
+pip install infermlx
 ```
 
-Then:
+```python
+import infermlx.infer as infermlx
+model = infermlx.Model.load_model()
+model.generate("Tell me a joke")
+```
+
+Look at the `example-*.py` scripts for more ideas.
+
+## How to run `infer.py` directly
+
+If you download the repo and want to just play with infer.py, you can do `pip install -r requirements.txt` and run `infer.py` like so:
 
 ```
 python -m infermlx.infer --prompt 'Tell me a joke.' 
-# OR if you choose to use infer.py on its own:
+# OR if you end up in the infermlx directory
 python infer.py --prompt 'Tell me a joke.' 
 ```
 
 It defaults to `unsloth/Llama-3.2-1B-Instruct` as it's free to use, quick, and only needs 4GB of RAM for inference out of the box. However, `mistralai/Mistral-7B-Instruct-v0.2` is another good one to use, it's very smart, but needs 16GB of free RAM.
 
-There are a handful of options:
+`infer.py` has a handful of options:
 
 - **`--model`**  
   **Default:** `"unsloth/Llama-3.2-1B-Instruct"`  
@@ -68,33 +88,40 @@ There are a handful of options:
 One way to have fun with LLMs, even small ones, is to 'force' them to say things. For example, if your model always refuses to answer a specific prompt, what happens if you force it to start its response with 'Yes, I am happy to help'? It depends. But you can do that!
 
 ```python
-token_stream = model.tokenizer.encode("I refuse to answer that because", False, False)
+import infermlx.infer as infermlx
+
+model = infermlx.Model.load_model()
+
+token_stream = model.tokenizer.encode("Here's one about pirates.", False, False)
 def make_the_model_start_with_something(tokens_so_far, logits):
-    nonlocal token_stream
     if token_stream:
         next_token = token_stream.pop(0)
         logits[:, next_token] = 2000
     return logits
-model.generate(args.prompt, max_tokens=args.max_tokens, sampler=sampler, logits_processors=[make_the_model_start_with_something])
+
+model.generate("Tell me a joke",
+               logits_processors=[make_the_model_start_with_something])
 ```
 
 You could also give the model a 'tic' of sorts:
 
 ```python
-token_stream = []
 import random
-def make_the_model_weird(tokens_so_far, logits):
-    nonlocal token_stream
+import infermlx.infer as infermlx
+
+model = infermlx.Model.load_model("mistralai/Mistral-7B-Instruct-v0.2")
+
+token_stream = []
+def interfere_with_the_output(tokens_so_far, logits):
     if len(token_stream) > 0:
         next_token = token_stream.pop(0)
         logits[:, next_token] = 2000
     else:
       if random.random() < 0.08:
-          token_stream.extend(model.tokenizer.encode("What the??", False, False))
-
+          token_stream.extend(model.tokenizer.encode("crap!", False, False))
     return logits
 
-model.generate(args.prompt, max_tokens=args.max_tokens, sampler=sampler, logits_processors=[make_the_model_weird])
+model.generate("Tell me a story about a cute bunny", logits_processors=[interfere_with_the_output])
 ```
 
 Let your imagination run wild! (You could also detect certain things it has said and then force its ongoing response from there.)
